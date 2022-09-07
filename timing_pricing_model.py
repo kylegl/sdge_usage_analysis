@@ -28,6 +28,12 @@ def get_category_kwh(day_data, ranges):
         category_total_kwh += sum_kwh(range_data)
 
     return category_total_kwh
+  
+# pandas
+def get_entries_in_range(data, range):
+    start, end = range
+
+    data[data['Start Time'].dt.hour.between(start, end, 'left')]  
 
 
 def get_partial_kwh_for_tiers(kwh, net_kwh, tier_range):

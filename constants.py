@@ -13,17 +13,21 @@ tiers = [
     },
 ]
 
-pricing_models = [
+price_models = [
     {
         "name": "standard",
-        "pricing": {
-            "tier_1": 0.393,
-            "tier_2": 0.495,
+        "rate": {
+            "tier_1": {
+                "default": 0.393,
+            },
+            "tier_2": {
+                "default": 0.495,
+            },
         },
     },
     {
         "name": "tou_dr1",
-        "pricing": {
+        "rate": {
             "tier_1": {
                 "super_off_peak": 0.234,
                 "off_peak": 0.356,
@@ -35,7 +39,7 @@ pricing_models = [
                 "peak": 0.69,
             },
         },
-        "timing": {
+        "time_ranges": {
             "super_off_peak": [(0, 6)],
             "off_peak": [(6, 16), (21, 24)],
             "peak": [(16, 21)],
@@ -43,7 +47,7 @@ pricing_models = [
     },
     {
         "name": "tou_dr2",
-        "pricing": {
+        "rate": {
             "tier_1": {
                 "off_peak": 0.303,
                 "peak": 0.594,
@@ -53,7 +57,7 @@ pricing_models = [
                 "peak": 0.696,
             },
         },
-        "timing": {
+        "time_ranges": {
             "off_peak": [(0, 16), (21, 24)],
             "peak": [(16, 21)],
         },
