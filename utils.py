@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from datetime import datetime
 from constants import tiers
+import matplotlib.pyplot as plt
 
 
 def load_data():
@@ -44,8 +45,8 @@ def filter_by_time_range(day_data, range):
 
     return list(
         filter(
-            lambda x: convert_time_str_to_obj(x["Start Time"]) >= start
-            and convert_time_str_to_obj(x["Start Time"]) < end,
+            lambda x: convert_time_12h_to_24h(x["Start Time"]) >= start
+            and convert_time_12h_to_24h(x["Start Time"]) < end,
             day_data,
         )
     )
@@ -67,10 +68,10 @@ def get_tier(kwh):
         start, end = tier["range"]
 
         if kwh >= start and kwh < end:
-            return tier
+            return tier['name']
 
 
-def convert_time_str_to_obj(time_str):
+def convert_time_12h_to_24h(time_str):
     raw_time, AM_PM = time_str.split()
     time = int(raw_time[:-3])
 
@@ -97,10 +98,35 @@ def sort_kwh_by_tier(kwh):
 
     return result
 
-def make_json(csv_file_path, json_file_path):
-    data = {}
-    with open(csv_file_path) as csv_file:
-        csv_reader = csv.DictReader(csv_file, delimiter=",")
 
-        for row in csv_reader:
+def get_time_range(time):
+    time = int(time)
+    if time > 12:
+        return "PM"
+
+    return "AM"
+
+
+def create_pivot_table(csv_path):
+    df = pd.read_csv(csv_path, skiprows=13)
+
+    df["Start Time"] = df["Start Time"].apply(convert_time_12h_to_24h)
+
+    grp = df.groupby("Start Time")
+
+    print(grp["Date"])
+
+    print(df)
+    pivot_table = grp.pivot_table(
+        df, "Consumption", "Date", "Start Time", aggfunc="sum", margins=True
+    )
+
+    print(pivot_table)
+
+
+
+def get_month_cost(month_group, price_model):
+    for day, day_group in month_group.groupby(month_group.Date.dt.day):
+        entries_in_timing_range = day_group[day_group['Start Time'].dt.hour.between(0, 6, 'left')]
+        print(entries_in_timing_range)
 
